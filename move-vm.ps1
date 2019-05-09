@@ -1,4 +1,6 @@
-﻿# Connect to source and destination vCenter instances
+# Script for cross vCenter vMotion.
+
+# Connect to source and destination vCenter instances
 #$Cred = Get-Credential
 $DestVC = "vc-name"
 $SourceVC = "SRC-VCName"
@@ -18,7 +20,7 @@ $SourceDatastore = Get-VM $VM -Location $SourceHost |Get-Datastore
 
 <# PortGroup migration
 
-The order that the Portgroups are added in ot this array must match the order of portgroups from the source VM. 
+The order that the Portgroups are added to this array must match the order of portgroups from the source VM. 
 Use the command "Get-NetworkAdapter -VM $vm |FT -Autosize" to display the order of portgroups on the source VM.
 
 #>
