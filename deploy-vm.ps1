@@ -9,7 +9,7 @@ param(
    [String]$password,
    [Parameter(Mandatory=$True)]
    [String]$vmTemplate,
-   [Parameter(Mandatory=$True)]
+   [Parameter(Mandatory=$False)]
    [String]$StorageTier,
    [Parameter(Mandatory=$True)]
    [String]$vCPU,
