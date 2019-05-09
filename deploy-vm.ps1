@@ -40,14 +40,15 @@ $osCust = Get-OSCustomizationSpec -Name 'PRSpec'
 
 # SUGGESTION for future version!!! Add Run-Once script for different server types? Or use a standard for RUNONCE for ALL (Enable WINRM Remote for Ansible config; --> Anti-Virus; Security configuration & lockdowns)
 
+# SUGGESTION for future version!!! New filter based on selected Storage Tier parameter. Tags (T2-Standard, T1-SSD etc)
+# SUGGESTION for future version!!! Utilise policy based storage for VM placement.
 
-# Select Datastore. New filter based on Datastore type selected in drop down (T2-Standard, T1-SSD etc)
+# Select Datastore. 
 # New section to select Datastore based on requested performance Tier (Param) or DS with most freespace
 <#
-
 $initialHost = "hostIP"                               # IP Address/Hostname of the host where initial deployment should be made.
 if ($StorageTier -eq "T2-Standard") {
-   $datastore = "BL-T2-OS-CLU-01"
+   $datastore = "T2-OS-CLU-01"
 }
 else {
    $SharedDS = get-datastore |where {$_.Name -like "GPS-BL*"}| Sort-Object -Property FreeSpaceGB -Descending:$true
@@ -55,19 +56,17 @@ else {
 }
 #>
 
+# Default datastore selection of DS Cluster (see propsed future changes)
+$datastore = "T2-OS-CLU-01"
 # Clone the VM Template to create new VM
 $cloneTask = New-VM -template $vmTEMPLATE -MemoryGB $memGB -NumCpu $vCPU -vmhost $initialHost -name $vmName -runasync -Datastore $Datastore -OSCustomizationSpec $osCust
 Get-Task -Id $cloneTask.ID | Wait-Task
-
-
-
 
 # Connect and assign network name. Currently only works for VMs with 1 NIC. Future change will allow for setting PG on multiple NICs.
 Get-VM $VMname | Get-NetworkAdapter | Set-NetworkAdapter -Connected:$true -StartConnected:$true -portgroup $portgroup -Confirm:$false
 
 # Power on the new VM
 start-vm $vmname | wait-tools
-
 
 ##### Wait for the VM to be powered on #####
 Start-Sleep 20
@@ -77,7 +76,6 @@ While ($vm.ExtensionData.Runtime.PowerState -ne 'poweredOn')
     Start-Sleep -Seconds 3
     $vm.ExtensionData.UpdateViewData('Runtime.PowerState')
 }
-
 
 
 function WaitVM-Customization {
